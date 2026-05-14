@@ -4,12 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Flight Board</title>
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Flight Board">
-<meta name="theme-color" content="#000000">
-<link rel="manifest" href="manifest.json">
 <style>
 /* ── CSS Variables (themes applied here) ── */
 :root {
@@ -1127,50 +1121,8 @@ let pendingTheme = null;
 // ═══════════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════════
-// ── Settings persistence via localStorage (PWA/browser version) ──
-const SETTINGS_KEY = 'flightboard_settings';
-
-const DEFAULTS = {
-  vatsimVid:      '',
-  ivaoVid:        '',
-  network:        'vatsim',
-  airportView:    'both',
-  theme:          'dark',
-  friends:        [],
-  customAirlines: {},
-  customColors: {
-    background:    '#000000',
-    headerBg:      '#3127F5',
-    headerText:    '#ffffff',
-    tableHeader:   '#5b5b5b',
-    rowHover:      '#999999',
-    statusDep:     '#b58900',
-    statusClimb:   '#3498db',
-    statusEnroute: '#2aa198',
-    statusDesc:    '#6c71c4',
-    statusApp:     '#9b59b6',
-    statusArr:     '#444444',
-    text:          '#ffffff',
-  }
-};
-
-function loadSettingsLocal() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
-    return { ...DEFAULTS, ...saved,
-      customColors:   { ...DEFAULTS.customColors,   ...(saved.customColors   || {}) },
-      customAirlines: { ...DEFAULTS.customAirlines, ...(saved.customAirlines || {}) },
-      friends:        saved.friends || [],
-    };
-  } catch(e) { return { ...DEFAULTS }; }
-}
-
-function saveSettingsLocal(s) {
-  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); } catch(e) {}
-}
-
 async function init() {
-  settings = loadSettingsLocal();
+  settings = await window.electronAPI.getSettings();
   network  = settings.network || 'vatsim';
   applyTheme(settings);
   updateToggleUI();
@@ -1184,7 +1136,7 @@ async function init() {
 function switchNetwork(net) {
   network = net;
   settings.network = net;
-  saveSettingsLocal(settings);
+  window.electronAPI.saveSettings(settings);
   updateToggleUI();
   pollCount = 0;
   clearInterval(pollTimer);
@@ -1598,13 +1550,53 @@ function renderFriendsList() {
     return;
   }
   list.innerHTML = friends.map((f, i) =>
-    '<div class="custom-airline-row">'
-    + '<span class="ca-code" style="flex:2">' + f.name + '</span>'
-    + '<span style="font-size:0.78em;opacity:0.7;flex:1">VATSIM: ' + (f.vatsimCid || '—') + '</span>'
-    + '<span style="font-size:0.78em;opacity:0.7;flex:1">IVAO: ' + (f.ivaoVid || '—') + '</span>'
+    '<div id="friend-row-' + i + '">'
+    // ── View mode ──
+    + '<div class="custom-airline-row" id="friend-view-' + i + '">'
+    + '<span style="font-size:1.1em">👤</span>'
+    + '<span class="ca-code" style="flex:1">' + f.name + '</span>'
+    + '<span style="font-size:0.78em;opacity:0.6;">VATSIM: ' + (f.vatsimCid || '—') + ' &nbsp; IVAO: ' + (f.ivaoVid || '—') + '</span>'
+    + '<button class="ca-del" style="border-color:#3127F5;color:#7090ff;" onclick="editFriend(' + i + ')">Edit</button>'
     + '<button class="ca-del" onclick="removeFriend(' + i + ')">Remove</button>'
     + '</div>'
+    // ── Edit mode (hidden by default) ──
+    + '<div id="friend-edit-' + i + '" style="display:none;background:var(--input-bg);border:1px solid var(--input-border);border-radius:6px;padding:10px;margin-bottom:6px;">'
+    + '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;">'
+    + '<div class="field" style="margin:0;flex:1;min-width:100px;"><label>Name</label>'
+    + '<input type="text" id="fedit-name-' + i + '" value="' + (f.name||'') + '"></div>'
+    + '<div class="field" style="margin:0;flex:1;min-width:90px;"><label>VATSIM CID</label>'
+    + '<input type="text" id="fedit-vatsim-' + i + '" value="' + (f.vatsimCid||'') + '"></div>'
+    + '<div class="field" style="margin:0;flex:1;min-width:90px;"><label>IVAO VID</label>'
+    + '<input type="text" id="fedit-ivao-' + i + '" value="' + (f.ivaoVid||'') + '"></div>'
+    + '<button onclick="saveFriendEdit(' + i + ')" style="padding:7px 12px;background:var(--toggle-active);color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:bold;white-space:nowrap;">Save</button>'
+    + '<button onclick="cancelFriendEdit(' + i + ')" style="padding:7px 12px;background:transparent;color:var(--text);border:1px solid var(--input-border);border-radius:6px;cursor:pointer;white-space:nowrap;">Cancel</button>'
+    + '</div></div>'
+    + '</div>'
   ).join('');
+}
+
+function editFriend(i) {
+  document.getElementById('friend-view-' + i).style.display = 'none';
+  document.getElementById('friend-edit-' + i).style.display = '';
+}
+
+function cancelFriendEdit(i) {
+  document.getElementById('friend-view-' + i).style.display = '';
+  document.getElementById('friend-edit-' + i).style.display = 'none';
+}
+
+function saveFriendEdit(i) {
+  const name    = document.getElementById('fedit-name-'   + i).value.trim();
+  const vatsim  = document.getElementById('fedit-vatsim-' + i).value.trim();
+  const ivao    = document.getElementById('fedit-ivao-'   + i).value.trim();
+  if (!name) {
+    document.getElementById('fedit-name-' + i).style.borderColor = '#e74c3c';
+    setTimeout(() => document.getElementById('fedit-name-' + i).style.borderColor = '', 1500);
+    return;
+  }
+  settings.friends[i] = { name, vatsimCid: vatsim, ivaoVid: ivao };
+  window.electronAPI ? window.electronAPI.saveSettings(settings) : saveSettingsLocal(settings);
+  renderFriendsList();
 }
 
 function addFriend() {
@@ -1626,14 +1618,14 @@ function addFriend() {
   document.getElementById('s-friend-name').value   = '';
   document.getElementById('s-friend-vatsim').value = '';
   document.getElementById('s-friend-ivao').value   = '';
-  saveSettingsLocal(settings);
+  window.electronAPI.saveSettings(settings);
   renderFriendsList();
 }
 
 function removeFriend(idx) {
   if (!settings.friends) return;
   settings.friends.splice(idx, 1);
-  saveSettingsLocal(settings);
+  window.electronAPI.saveSettings(settings);
   renderFriendsList();
 }
 
@@ -1729,7 +1721,7 @@ function addFriend() {
 function removeFriend(idx) {
   if (!settings.friends) return;
   settings.friends.splice(idx, 1);
-  saveSettingsLocal(settings);
+  window.electronAPI.saveSettings(settings);
   renderFriendsList();
 }
 
@@ -1835,7 +1827,7 @@ async function saveSettings() {
   settings.friends       = settings.friends || [];
   applyAirportView(settings.airportView);
   // customAirlines already updated in-place by addCustomAirline / removeCustomAirline
-  saveSettingsLocal(settings);
+  await window.electronAPI.saveSettings(settings);
   applyTheme(settings);
   closeSettings();
   // Restart polling if VID changed
@@ -2098,14 +2090,6 @@ document.addEventListener('click', function(e) {
   window.addEventListener('resize', onResize);
   onResize();
 })();
-</script>
-
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
-  });
-}
 </script>
 </body>
 </html>
