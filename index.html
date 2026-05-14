@@ -1160,7 +1160,7 @@ function loadSettingsLocal() {
     return { ...DEFAULTS, ...saved,
       customColors:   { ...DEFAULTS.customColors,   ...(saved.customColors   || {}) },
       customAirlines: { ...DEFAULTS.customAirlines, ...(saved.customAirlines || {}) },
-      friends:        saved.friends        || [],
+      friends:        saved.friends || [],
     };
   } catch(e) { return { ...DEFAULTS }; }
 }
@@ -1200,9 +1200,10 @@ function updateToggleUI() {
 }
 
 function clearBoard() {
-  ['your-flight','same-route-flights','dep-airport-flights','arr-airport-flights'].forEach(id => {
+  ['your-flight','same-route-flights','dep-airport-flights','arr-airport-flights','friends-flying-flights'].forEach(id => {
     document.getElementById(id).innerHTML = '';
   });
+  document.getElementById('friends-flying-section').style.display = 'none';
   document.getElementById('dep-icao').textContent = 'DEP';
   document.getElementById('arr-icao').textContent = 'ARR';
   document.getElementById('debug').textContent = '';
@@ -1283,11 +1284,11 @@ async function fetchVatsim() {
         (p.flight_plan.departure === fp.arrival || p.flight_plan.arrival === fp.arrival) && String(p.cid) !== String(vid))
       .map(p => vatsimAirportRow(p, fp.arrival)).join('');
 
-    updateFriendsSection(pilots, 'vatsim');
     pollCount++;
     document.getElementById('debug').textContent =
       `poll #${pollCount} · VATSIM data @ ${new Date(dataTs).toUTCString().slice(17,25)}z`;
   } catch(e) {
+    document.getElementById('your-flight').innerHTML = '<tr><td colspan="7" style="color:#f90;padding:8px;">⚠ VATSIM error: ' + e.message + '</td></tr>';
     document.getElementById('debug').textContent = 'Error fetching VATSIM data: ' + e.message;
   }
 }
@@ -1426,7 +1427,7 @@ async function fetchIvao() {
     return;
   }
   try {
-    const res    = await fetch('https://api.ivao.aero/v2/tracker/whazzup');
+    const res    = await fetch('https://api.ivao.aero/v2/tracker/whazzup', { signal: AbortSignal.timeout(10000) });
     const data   = await res.json();
     const pilots = data.clients?.pilots ?? [];
     const dataTs = data.updatedAt || new Date().toISOString();
@@ -1480,11 +1481,11 @@ async function fetchIvao() {
         (p.flightPlan.departureId === fp.arrivalId || p.flightPlan.arrivalId === fp.arrivalId) && String(p.userId) !== String(vid))
       .map(p => ivaoAirportRow(p, fp.arrivalId)).join('');
 
-    updateFriendsSection(pilots, 'ivao');
     pollCount++;
     document.getElementById('debug').textContent =
       `poll #${pollCount} · IVAO data @ ${new Date(dataTs).toUTCString().slice(17,25)}z`;
   } catch(e) {
+    document.getElementById('your-flight').innerHTML = '<tr><td colspan="7" style="color:#f90;padding:8px;">⚠ IVAO error: ' + e.message + '</td></tr>';
     document.getElementById('debug').textContent = 'Error fetching IVAO data: ' + e.message;
   }
 }
@@ -1665,9 +1666,12 @@ function renderCustomAirlinesList() {
 function isFriend(p, network) {
   const friends = settings.friends || [];
   if (network === 'vatsim') {
-    return friends.some(f => f.vatsimCid && String(f.vatsimCid) === String(p.cid));
+    const cid = String(p.cid || '');
+    return cid !== '' && friends.some(f => f.vatsimCid && f.vatsimCid.trim() !== '' && String(f.vatsimCid) === cid);
   } else {
-    return friends.some(f => f.ivaoVid && String(f.ivaoVid) === String(p.userId));
+    // Only match on IVAO if friend explicitly has an IVAO VID set
+    const uid = String(p.userId || '');
+    return uid !== '' && friends.some(f => f.ivaoVid && f.ivaoVid.trim() !== '' && String(f.ivaoVid) === uid);
   }
 }
 
@@ -1675,9 +1679,11 @@ function friendName(p, network) {
   const friends = settings.friends || [];
   let f;
   if (network === 'vatsim') {
-    f = friends.find(fr => fr.vatsimCid && String(fr.vatsimCid) === String(p.cid));
+    const cid = String(p.cid || '');
+    f = friends.find(fr => fr.vatsimCid && fr.vatsimCid.trim() !== '' && String(fr.vatsimCid) === cid);
   } else {
-    f = friends.find(fr => fr.ivaoVid && String(fr.ivaoVid) === String(p.userId));
+    const uid = String(p.userId || '');
+    f = friends.find(fr => fr.ivaoVid && fr.ivaoVid.trim() !== '' && String(fr.ivaoVid) === uid);
   }
   return f ? f.name : null;
 }
