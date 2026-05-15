@@ -193,8 +193,8 @@ tr:hover td { background: var(--row-hover); color: #000; }
   border: 1px solid var(--input-border);
   border-radius: 10px;
   padding: 24px;
-  width: 480px;
-  max-width: 95vw;
+  width: 680px;
+  max-width: 96vw;
   max-height: 90vh;
   overflow-y: auto;
   color: var(--text);
@@ -728,7 +728,7 @@ tbody tr:hover {
 
     <div class="settings-section">
       <h3>My Airlines</h3>
-      <p style="font-size:0.82em;opacity:0.7;margin-bottom:10px;">Add your own logo for any virtual airline. It will show instead of the default tail when that callsign prefix appears on the board.</p>
+      <p style="font-size:0.82em;opacity:0.7;margin-bottom:10px;">Add your own logo for any airline callsign prefix. This overrides any built-in logo. To remove a built-in logo, add the same ICAO code here with your preferred replacement image.</p>
       <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px;">
         <div class="field" style="margin:0;flex:0 0 80px;">
           <label>ICAO code</label>
@@ -1549,30 +1549,41 @@ function renderFriendsList() {
     list.innerHTML = '<p style="font-size:0.82em;opacity:0.5;text-align:center;padding:8px;">No friends added yet.</p>';
     return;
   }
-  list.innerHTML = friends.map((f, i) =>
-    '<div id="friend-row-' + i + '">'
-    // ── View mode ──
-    + '<div class="custom-airline-row" id="friend-view-' + i + '">'
-    + '<span style="font-size:1.1em">👤</span>'
-    + '<span class="ca-code" style="flex:1">' + f.name + '</span>'
-    + '<span style="font-size:0.78em;opacity:0.6;">VATSIM: ' + (f.vatsimCid || '—') + ' &nbsp; IVAO: ' + (f.ivaoVid || '—') + '</span>'
-    + '<button class="ca-del" style="border-color:#3127F5;color:#7090ff;" onclick="editFriend(' + i + ')">Edit</button>'
-    + '<button class="ca-del" onclick="removeFriend(' + i + ')">Remove</button>'
-    + '</div>'
-    // ── Edit mode (hidden by default) ──
-    + '<div id="friend-edit-' + i + '" style="display:none;background:var(--input-bg);border:1px solid var(--input-border);border-radius:6px;padding:10px;margin-bottom:6px;">'
-    + '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;">'
-    + '<div class="field" style="margin:0;flex:1;min-width:100px;"><label>Name</label>'
-    + '<input type="text" id="fedit-name-' + i + '" value="' + (f.name||'') + '"></div>'
-    + '<div class="field" style="margin:0;flex:1;min-width:90px;"><label>VATSIM CID</label>'
-    + '<input type="text" id="fedit-vatsim-' + i + '" value="' + (f.vatsimCid||'') + '"></div>'
-    + '<div class="field" style="margin:0;flex:1;min-width:90px;"><label>IVAO VID</label>'
-    + '<input type="text" id="fedit-ivao-' + i + '" value="' + (f.ivaoVid||'') + '"></div>'
-    + '<button onclick="saveFriendEdit(' + i + ')" style="padding:7px 12px;background:var(--toggle-active);color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:bold;white-space:nowrap;">Save</button>'
-    + '<button onclick="cancelFriendEdit(' + i + ')" style="padding:7px 12px;background:transparent;color:var(--text);border:1px solid var(--input-border);border-radius:6px;cursor:pointer;white-space:nowrap;">Cancel</button>'
-    + '</div></div>'
-    + '</div>'
-  ).join('');
+  list.innerHTML = friends.map(function(f, i) {
+
+    // ── View mode: single compact row ──
+    var view = '<div id="friend-view-' + i + '" style="'
+      + 'display:flex;align-items:center;gap:8px;flex-wrap:nowrap;'
+      + 'background:var(--input-bg);border:1px solid var(--input-border);'
+      + 'border-radius:6px;padding:7px 10px;margin-bottom:6px;">'
+      + '<span style="font-size:0.9em;flex-shrink:0;">👤</span>'
+      + '<span style="font-weight:bold;font-size:0.88em;flex:0 0 auto;min-width:60px;">' + f.name + '</span>'
+      + '<span style="font-size:0.78em;opacity:0.6;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'
+      + 'VATSIM: ' + (f.vatsimCid||'—') + ' &nbsp; IVAO: ' + (f.ivaoVid||'—')
+      + '</span>'
+      + '<button onclick="editFriend(' + i + ')" style="flex-shrink:0;padding:3px 10px;background:transparent;border:1px solid #5577ff;color:#7090ff;border-radius:4px;cursor:pointer;font-size:0.78em;white-space:nowrap;">✏ Edit</button>'
+      + '<button onclick="removeFriend(' + i + ')" style="flex-shrink:0;padding:3px 10px;background:transparent;border:1px solid #c0392b;color:#e74c3c;border-radius:4px;cursor:pointer;font-size:0.78em;white-space:nowrap;">Remove</button>'
+      + '</div>';
+
+    // ── Edit mode ──
+    var edit = '<div id="friend-edit-' + i + '" style="display:none;'
+      + 'background:var(--input-bg);border:1px solid var(--toggle-active);'
+      + 'border-radius:6px;padding:10px;margin-bottom:6px;">'
+      + '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">'
+      + '<div style="flex:1;min-width:100px;"><label style="font-size:0.72em;opacity:0.6;display:block;margin-bottom:2px;">Name</label>'
+      + '<input type="text" id="fedit-name-' + i + '" value="' + (f.name||'').replace(/"/g,'&quot;') + '" style="width:100%;background:var(--bg);border:1px solid var(--input-border);color:var(--text);padding:5px 7px;border-radius:4px;box-sizing:border-box;font-size:0.85em;"></div>'
+      + '<div style="flex:1;min-width:80px;"><label style="font-size:0.72em;opacity:0.6;display:block;margin-bottom:2px;">VATSIM CID</label>'
+      + '<input type="text" id="fedit-vatsim-' + i + '" value="' + (f.vatsimCid||'') + '" style="width:100%;background:var(--bg);border:1px solid var(--input-border);color:var(--text);padding:5px 7px;border-radius:4px;box-sizing:border-box;font-size:0.85em;"></div>'
+      + '<div style="flex:1;min-width:80px;"><label style="font-size:0.72em;opacity:0.6;display:block;margin-bottom:2px;">IVAO VID</label>'
+      + '<input type="text" id="fedit-ivao-' + i + '" value="' + (f.ivaoVid||'') + '" style="width:100%;background:var(--bg);border:1px solid var(--input-border);color:var(--text);padding:5px 7px;border-radius:4px;box-sizing:border-box;font-size:0.85em;"></div>'
+      + '</div>'
+      + '<div style="display:flex;gap:8px;">'
+      + '<button onclick="saveFriendEdit(' + i + ')" style="flex:1;padding:6px;background:var(--toggle-active);color:#fff;border:none;border-radius:5px;cursor:pointer;font-weight:bold;font-size:0.85em;">Save</button>'
+      + '<button onclick="cancelFriendEdit(' + i + ')" style="flex:1;padding:6px;background:transparent;color:var(--text);border:1px solid var(--input-border);border-radius:5px;cursor:pointer;font-size:0.85em;">Cancel</button>'
+      + '</div></div>';
+
+    return '<div id="friend-row-' + i + '">' + view + edit + '</div>';
+  }).join('');
 }
 
 function editFriend(i) {
@@ -1680,21 +1691,7 @@ function friendName(p, network) {
   return f ? f.name : null;
 }
 
-function renderFriendsList() {
-  const list = document.getElementById('friends-list');
-  const friends = settings.friends || [];
-  if (friends.length === 0) {
-    list.innerHTML = '<p style="font-size:0.82em;opacity:0.5;text-align:center;padding:8px;">No friends added yet.</p>';
-    return;
-  }
-  list.innerHTML = friends.map((f, i) => `
-    <div class="custom-airline-row">
-      <span style="font-size:1.1em">👤</span>
-      <span class="ca-code" style="flex:1">${f.name}</span>
-      <span style="font-size:0.8em;opacity:0.6;">VATSIM: ${f.vatsimCid||'—'} &nbsp; IVAO: ${f.ivaoVid||'—'}</span>
-      <button class="ca-del" onclick="removeFriend(${i})">Remove</button>
-    </div>`).join('');
-}
+
 
 function addFriend() {
   const name    = document.getElementById('s-friend-name').value.trim();
