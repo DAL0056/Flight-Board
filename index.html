@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Flight Board</title>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Flight Board">
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="manifest.json">
 <style>
 /* ── CSS Variables (themes applied here) ── */
 :root {
@@ -1121,8 +1127,50 @@ let pendingTheme = null;
 // ═══════════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════════
+// ── Settings persistence via localStorage (PWA/browser version) ──
+const SETTINGS_KEY = 'flightboard_settings';
+
+const DEFAULTS = {
+  vatsimVid:      '',
+  ivaoVid:        '',
+  network:        'vatsim',
+  airportView:    'both',
+  theme:          'dark',
+  friends:        [],
+  customAirlines: {},
+  customColors: {
+    background:    '#000000',
+    headerBg:      '#3127F5',
+    headerText:    '#ffffff',
+    tableHeader:   '#5b5b5b',
+    rowHover:      '#999999',
+    statusDep:     '#b58900',
+    statusClimb:   '#3498db',
+    statusEnroute: '#2aa198',
+    statusDesc:    '#6c71c4',
+    statusApp:     '#9b59b6',
+    statusArr:     '#444444',
+    text:          '#ffffff',
+  }
+};
+
+function loadSettingsLocal() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
+    return { ...DEFAULTS, ...saved,
+      customColors:   { ...DEFAULTS.customColors,   ...(saved.customColors   || {}) },
+      customAirlines: { ...DEFAULTS.customAirlines, ...(saved.customAirlines || {}) },
+      friends:        saved.friends || [],
+    };
+  } catch(e) { return { ...DEFAULTS }; }
+}
+
+function saveSettingsLocal(s) {
+  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); } catch(e) {}
+}
+
 async function init() {
-  settings = await window.electronAPI.getSettings();
+  settings = loadSettingsLocal();
   network  = settings.network || 'vatsim';
   applyTheme(settings);
   updateToggleUI();
@@ -1136,7 +1184,7 @@ async function init() {
 function switchNetwork(net) {
   network = net;
   settings.network = net;
-  window.electronAPI.saveSettings(settings);
+  saveSettingsLocal(settings);
   updateToggleUI();
   pollCount = 0;
   clearInterval(pollTimer);
@@ -1606,7 +1654,7 @@ function saveFriendEdit(i) {
     return;
   }
   settings.friends[i] = { name, vatsimCid: vatsim, ivaoVid: ivao };
-  window.electronAPI ? window.electronAPI.saveSettings(settings) : saveSettingsLocal(settings);
+  saveSettingsLocal(settings);
   renderFriendsList();
 }
 
@@ -1629,14 +1677,14 @@ function addFriend() {
   document.getElementById('s-friend-name').value   = '';
   document.getElementById('s-friend-vatsim').value = '';
   document.getElementById('s-friend-ivao').value   = '';
-  window.electronAPI.saveSettings(settings);
+  saveSettingsLocal(settings);
   renderFriendsList();
 }
 
 function removeFriend(idx) {
   if (!settings.friends) return;
   settings.friends.splice(idx, 1);
-  window.electronAPI.saveSettings(settings);
+  saveSettingsLocal(settings);
   renderFriendsList();
 }
 
@@ -1718,7 +1766,7 @@ function addFriend() {
 function removeFriend(idx) {
   if (!settings.friends) return;
   settings.friends.splice(idx, 1);
-  window.electronAPI.saveSettings(settings);
+  saveSettingsLocal(settings);
   renderFriendsList();
 }
 
@@ -1824,7 +1872,7 @@ async function saveSettings() {
   settings.friends       = settings.friends || [];
   applyAirportView(settings.airportView);
   // customAirlines already updated in-place by addCustomAirline / removeCustomAirline
-  await window.electronAPI.saveSettings(settings);
+  saveSettingsLocal(settings);
   applyTheme(settings);
   closeSettings();
   // Restart polling if VID changed
@@ -2087,6 +2135,14 @@ document.addEventListener('click', function(e) {
   window.addEventListener('resize', onResize);
   onResize();
 })();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
 </script>
 </body>
 </html>

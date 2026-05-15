@@ -14,7 +14,6 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  // Network first for API calls, cache first for assets
   if (e.request.url.includes('vatsim') || e.request.url.includes('ivao') || e.request.url.includes('avs.io')) {
     e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
   } else {
