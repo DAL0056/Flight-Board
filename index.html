@@ -1719,7 +1719,7 @@ function closeSettings() {
 
 function saveSplitSetting() {
   settings.splitInOut = document.getElementById('s-split-inout').checked;
-  saveSettingsLocal ? saveSettingsLocal(settings);
+  saveSettingsLocal(settings);
 }
 
 function selectAirportView(view) {
