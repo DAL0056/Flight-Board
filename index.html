@@ -1811,35 +1811,9 @@ function saveFriendEdit(i) {
   renderFriendsList();
 }
 
-function addFriend() {
-  const name      = document.getElementById('s-friend-name').value.trim();
-  const vatsimCid = document.getElementById('s-friend-vatsim').value.trim();
-  const ivaoVid   = document.getElementById('s-friend-ivao').value.trim();
-  if (!name) {
-    const el = document.getElementById('s-friend-name');
-    el.style.borderColor = '#e74c3c';
-    setTimeout(function() { el.style.borderColor = ''; }, 1500);
-    return;
-  }
-  if (!vatsimCid && !ivaoVid) {
-    alert('Please enter at least one network ID (VATSIM CID or IVAO VID).');
-    return;
-  }
-  if (!settings.friends) settings.friends = [];
-  settings.friends.push({ name: name, vatsimCid: vatsimCid, ivaoVid: ivaoVid });
-  document.getElementById('s-friend-name').value   = '';
-  document.getElementById('s-friend-vatsim').value = '';
-  document.getElementById('s-friend-ivao').value   = '';
-  saveSettingsLocal(settings);
-  renderFriendsList();
-}
 
-function removeFriend(idx) {
-  if (!settings.friends) return;
-  settings.friends.splice(idx, 1);
-  saveSettingsLocal(settings);
-  renderFriendsList();
-}
+
+
 
 
 
