@@ -1,1 +1,14 @@
-{"name":"Flight Board","short_name":"FlightBoard","description":"Live VATSIM & IVAO flight information board","start_url":"./index.html","display":"standalone","background_color":"#000000","theme_color":"#000000","orientation":"any","icons":[{"src":"icon-192.png","sizes":"192x192","type":"image/png"},{"src":"icon-512.png","sizes":"512x512","type":"image/png"}]}
+{
+  "name": "Flight Board",
+  "short_name": "FlightBoard",
+  "description": "VATSIM, IVAO & FSHub live flight board",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#3127F5",
+  "orientation": "any",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
