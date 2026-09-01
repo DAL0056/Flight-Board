@@ -1,0 +1,145 @@
+================================================================================
+                     FLIGHT BOARD - QUICK START GUIDE
+================================================================================
+
+WHAT IS FLIGHT BOARD?
+Flight Board is a live flight information board for Microsoft Flight Simulator
+2020/2024 and X-Plane. It shows your flight, nearby traffic, and friends flying
+on VATSIM, IVAO, and FSHub - just like the boards you see at real airports.
+
+--------------------------------------------------------------------------------
+ WINDOWS APP (.EXE)
+--------------------------------------------------------------------------------
+
+SETUP (first time only):
+  1. Double-click "Flight Board Setup.exe" to install
+  2. Open the app from your Desktop or Start Menu
+  3. Click the gear icon (top right)
+  4. Enter your VATSIM CID and/or IVAO VID
+  5. (Optional) Add your FSHub token and Pilot ID for landing rates
+  6. Close settings - everything saves automatically
+
+  Note: Windows may show "Smart App Control blocked an app" because the app
+  isn't code-signed. This is normal for indie apps. Click "More info" ->
+  "Run anyway", or right-click the .exe -> Properties -> check "Unblock".
+
+USING THE BOARD:
+  - Use the VATSIM / IVAO / FSHub toggle to switch networks
+  - Use the Pilot / ATC toggle to switch modes
+  - Connect to the network in your simulator - the board updates automatically
+  - Click any flight row to see full flight plan details
+  - Hover or tap the status arrow to see the full route
+  - The Zulu (UTC) clock is shown in the top bar
+
+PILOT MODE shows:
+  - Your Flight
+  - Flights with the Same Route
+  - Friends Flying (when friends are online)
+  - Airport Traffic at your departure and arrival airports
+
+ATC MODE shows (when connected as a controller):
+  - All arrivals and departures at your controlled airport
+  - Your callsign and frequency in the status bar
+
+FSHUB VIEW shows:
+  - Your latest FSHub flight and your friends' flights
+  - "En route" when a friend is flying with the FSHub LRM client active
+  - "Arrived" with time since landing for completed flights
+  - Click any row for details including landing rate, distance, and duration
+
+--------------------------------------------------------------------------------
+ SETTINGS (gear icon)
+--------------------------------------------------------------------------------
+
+  Network IDs      - your VATSIM CID and IVAO VID
+  Airport View     - show both airports, departure only, or arrival only
+  IN/OUT Split     - separate arrivals and departures with colored labels
+  Time to Land     - show a live countdown (e.g. "1h 23m") instead of arrival
+                     clock time. The ETA column header switches to "To Land"
+  FSHub Landing    - show FSHub landing rate in the detail card of an arrived
+                     VATSIM/IVAO flight (needs your FSHub token)
+  Theme            - Dark, Light, or fully Custom colors
+  Friends          - add friends by name + VATSIM CID / IVAO VID / FSHub ID
+  My Airlines      - upload custom logos for your virtual airline
+
+  The window remembers its size, position, monitor, maximized and full-screen
+  state between launches. Your settings are saved to your Documents folder and
+  a backup, so they survive app reinstalls and updates.
+
+--------------------------------------------------------------------------------
+ FSHUB INTEGRATION (landing rates + offline flights)
+--------------------------------------------------------------------------------
+
+  FSHub records every flight you fly (even offline, without VATSIM/IVAO) and
+  measures your landing rate. To connect it:
+
+  1. Go to fshub.io/settings/integrations and copy your API token
+  2. In Flight Board: gear -> FSHub Integration -> paste the token
+  3. Enter your own FSHub Pilot ID (found in your fshub.io profile URL)
+  4. Add each friend's FSHub Pilot ID in their Friend entry
+
+  What you get:
+  - A dedicated FSHub board showing you and your friends' latest flights
+  - Landing rate (color-coded: green soft, amber firm, red hard) in the
+    detail card of arrived flights
+  - Live "En route" status when a friend flies with their LRM client running
+
+  How live detection works:
+  - FSHub only knows a friend is flying if their LRM client is running
+  - When flying on VATSIM/IVAO too, the board cross-references their network
+    ID and fills in the real departure, aircraft, and live status
+  - FSHub's API only shares destination + GPS position during a flight;
+    full live route/speed appears on the fshub.io profile page
+
+--------------------------------------------------------------------------------
+ WEB / PWA VERSION (any device - phone, tablet, browser)
+--------------------------------------------------------------------------------
+
+URL:  https://dal0056.github.io/Flight-Board/
+
+SETUP:
+  1. Open the URL above in Chrome or Edge
+  2. Click gear -> enter your VATSIM CID and/or IVAO VID
+  3. (Optional) add your FSHub token and Pilot ID
+  4. Your settings save automatically in the browser
+
+INSTALL AS AN APP (optional):
+  Android/Chrome:
+    - Tap the menu (three dots) -> "Add to Home Screen"
+  iPhone/iPad (Safari):
+    - Tap the Share button -> "Add to Home Screen"
+  Windows/Mac (Chrome or Edge):
+    - Click the install icon in the address bar
+
+  After an update, force-refresh (Ctrl+Shift+R) or reopen the installed app
+  to load the newest version.
+
+NOTES:
+  - All features are identical to the Windows app
+  - Settings are saved per device - each device has its own setup
+  - The PWA has no security warnings, so it's the easiest way to share with
+    your virtual airline members
+  - Works offline for cached logos; live data requires internet
+
+--------------------------------------------------------------------------------
+ FRIENDS SYSTEM
+--------------------------------------------------------------------------------
+  1. Open gear -> Friends
+  2. Enter their name, and any of VATSIM CID / IVAO VID / FSHub ID -> + Add
+  3. When they are online, they appear in the "Friends Flying" section,
+     highlighted on whichever network they're using
+  4. Click Edit to update their details at any time
+
+--------------------------------------------------------------------------------
+ TROUBLESHOOTING
+--------------------------------------------------------------------------------
+  - Board is empty: check your VATSIM CID / IVAO VID in Settings, and make
+    sure you're connected to the network in your sim
+  - FSHub shows nothing: confirm your token is pasted and your Pilot ID / the
+    friend's FSHub ID is correct
+  - Friend flying but shows "Arrived" on FSHub: their FSHub LRM client wasn't
+    running for that flight - FSHub can only track flights its client records
+  - Wrong status: status updates each poll (15s); give it a moment after
+    takeoff or top of descent to settle
+
+================================================================================
