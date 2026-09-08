@@ -1,0 +1,41 @@
+Copyright (c) 2026 Diego (DAL0056) — AeroMuisca Virtual Airline
+
+ALL RIGHTS RESERVED.
+
+This software and its source code (the "Software"), including but not limited to
+the Flight Board application, its HTML, CSS, JavaScript, embedded data, layouts,
+and design, are the exclusive property of the copyright holder.
+
+PERMISSIONS:
+You are permitted to:
+  - Use the Flight Board application for personal, non-commercial flight
+    simulation purposes.
+
+RESTRICTIONS:
+Without the express written permission of the copyright holder, you may NOT:
+  - Copy, reproduce, or redistribute the source code or any part of it.
+  - Modify, adapt, translate, or create derivative works based on the Software.
+  - Republish, host, or redistribute the Software or a modified version of it
+    under your own name or any other name.
+  - Sell, sublicense, rent, or lease the Software.
+  - Remove or alter any copyright, trademark, or attribution notices.
+
+The names "Flight Board", "AeroMuisca", the XUA callsign, and associated logos
+and branding are the property of the copyright holder and may not be used
+without permission.
+
+THIRD-PARTY DATA:
+This Software integrates with VATSIM, IVAO, and FSHub via their public APIs.
+Those services, their data, and their trademarks belong to their respective
+owners. Airline logos displayed by the Software are the property of their
+respective airlines and are used for identification purposes only.
+
+DISCLAIMER:
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
+
+For permission requests, contact the copyright holder (VATSIM CID: DAL0056).

@@ -1,4 +1,4 @@
-const CACHE = 'flightboard-v24';
+const CACHE = 'flightboard-v30';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
