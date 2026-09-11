@@ -1,0 +1,175 @@
+================================================================================
+                        FLIGHT BOARD - CHANGELOG
+================================================================================
+
+VERSION 1.0.0 - Initial Release
+--------------------------------------------------------------------------------
+- VATSIM and IVAO flight boards in a single Windows app
+- Toggle switch to switch between VATSIM and IVAO instantly
+- Settings panel (gear icon) to set VATSIM CID and IVAO VID
+- Dark, Light and Custom color themes
+- 125 pre-embedded airline logos (no internet required)
+- Live CDN logo fallback for any real-world airline not embedded
+- Default tail logo for virtual/fictional airlines
+- Your own XUA personal airline logo embedded
+- Responsive layout for portrait and narrow screens
+- Auto-refresh every 15 seconds
+
+
+VERSION 1.1.0
+--------------------------------------------------------------------------------
+- Added "My Airlines" section in Settings to upload custom logos per user
+- Custom logos are stored locally per user - do not affect other installations
+- Custom logos can be removed at any time to revert to default tail
+
+
+VERSION 1.2.0
+--------------------------------------------------------------------------------
+- Fixed: own flight was incorrectly appearing in the Airport Traffic tables
+- Fixed: "Other Airport" column renamed to "Route"
+- Fixed: all 4 tables now share the same column structure for consistency
+  (Callsign | Airline | Route | Aircraft | Status | ETA)
+- Fixed: "Your Flight" and "Same Route" tables now show DEP -> ARR in
+  a single Route column instead of two separate DEP and ARR columns
+- Fixed: column headers now properly align with data below them
+
+
+VERSION 1.3.0
+--------------------------------------------------------------------------------
+- Fixed: VATSIM flight status now correctly detects all 6 phases:
+  Departing, Climbing, En route, Descending, Approaching, Arrived
+- Fixed: VATSIM ETA now calculated from actual departure time and filed
+  flight duration, giving accurate remaining time instead of total flight time
+- Fixed: Status arrows (up departing / down arriving) now show a tooltip with
+  the full route (e.g. KATL -> KJFK) on hover and on tap for touch screens
+
+
+VERSION 1.4.0
+--------------------------------------------------------------------------------
+- Added 64 additional airline logos extracted from user settings and embedded
+  directly into the app (no longer need to be added manually via Settings)
+- Total self-contained logos increased to 189
+- My Airlines list in Settings is now clean for users to add their own logos
+
+
+VERSION 1.5.0
+--------------------------------------------------------------------------------
+- Added flight detail card: click any flight row to see a full breakdown with
+  large airline logo, callsign, aircraft (wake/type/equipment), status badge,
+  DEP -> ARR route, flight-plan grid, and remarks
+- Upgraded CDN airline logos to higher resolution (160x80) for sharpness
+- Added ATC mode: toggle to see arrivals/departures at your controlled
+  airport, with your callsign and frequency in the status bar
+- Added Zulu (UTC) clock in the top bar
+- Added IN/OUT split option: separate arrivals and departures with colored
+  labels and an elegant divider
+
+
+VERSION 1.6.0
+--------------------------------------------------------------------------------
+- Added flight progress bar: a thin colored bar under each status badge
+  showing how far along the flight is
+- Added "Time to Land" toggle: switch the ETA column between arrival clock
+  time and a live countdown (e.g. "1h 23m"); the header switches to "To Land"
+- Added an embedded database of 29,307 airports so ETAs are calculated from
+  your real position and ground speed via great-circle distance
+
+
+VERSION 1.7.0
+--------------------------------------------------------------------------------
+- Improved status detection reliability:
+  * Uses your actual altitude trend between polls (not just cruise-altitude
+    guessing) so Climbing/Descending are accurate
+  * "Approaching" only triggers when genuinely near the arrival airport,
+    low and slow - not right after takeoff
+  * New flight plans reset tracking correctly (including reflying the same
+    route) so old "Arrived" status no longer sticks
+  * High-elevation departure airports no longer show a false "Arrived"
+
+
+VERSION 1.8.0 - FSHub Integration
+--------------------------------------------------------------------------------
+- Added FSHub as a third network view alongside VATSIM and IVAO
+- Added FSHub Integration in Settings: paste your API token once to fetch
+  landing data for yourself and your friends
+- Added "Your FSHub Pilot ID" and per-friend "FSHub ID" fields
+- Landing Rate Monitor (LRM): the landing rate of an arrived flight appears
+  in the detail card, color-coded green (soft) / amber (firm) / red (hard)
+- FSHub board mirrors the VATSIM/IVAO layout with "Your Flight" and
+  "Friends Flying" sections
+- Clickable link to fshub.io/settings/integrations in Settings
+- External links now open in your system browser
+
+
+VERSION 1.9.0 - FSHub Live Detection
+--------------------------------------------------------------------------------
+- FSHub board now distinguishes live flights from completed ones:
+  * "En route" when a friend is currently flying (FSHub is_online + live GPS)
+  * "Arrived" with time-since-landing for completed flights
+- Cross-references a pilot's VATSIM/IVAO ID from their FSHub profile to fill
+  in the real departure, aircraft, and live status when they're also flying
+  on a network
+- Smart stale-online detection: if a pilot's live position is at their
+  destination, they're shown as Arrived (not stuck "flying")
+- Fixed: flight duration in the FSHub detail card (was reading seconds as
+  minutes, showing wildly wrong values)
+
+
+VERSION 2.0.0 - Persistence & Window State
+--------------------------------------------------------------------------------
+- Settings now save to your Documents folder with an automatic backup copy,
+  so your token, IDs, friends and preferences survive app reinstalls/updates
+- FSHub token and Pilot ID save on every keystroke and flash green to confirm
+- The app now remembers its window size, position, monitor, maximized and
+  full-screen state between launches (restores safely if a monitor is gone)
+- Fixed: settings panel now correctly shows your saved token, Pilot ID and
+  all toggles when reopened (they were saved but not displayed before)
+- Web/PWA version updated to match all desktop features
+
+
+VERSION 2.1.0 - Live Progress, Friend Counts, Sorting, FSHub Auto-Detect & Logos
+--------------------------------------------------------------------------------
+Flight progress:
+- Added a flight progress bar under each status, based on the aircraft's real
+  position along its route (distance flown vs total great-circle distance)
+- The bar fades along its length and its color is customizable in Custom themes
+- A toggle in Settings turns the progress bar on or off
+
+Friend counts:
+- Each network tab (VATSIM / IVAO) now shows a live count of how many of your
+  friends are currently flying on that network
+
+Sortable columns:
+- Click the Callsign, Airline, Route, or Aircraft headers in the "Flights with
+  Same Route" and "Airport Traffic" tables to sort
+- Each click cycles: A to Z, then Z to A, then back to default order
+- Active sort is marked with an arrow; sorting an airport table temporarily
+  overrides the IN / OUT split view
+
+FSHub auto-detect (desktop app only):
+- The app can progressively scan FSHub's pilot directory in the background and
+  build a permanent local database linking VATSIM/IVAO IDs to FSHub accounts
+- Landing rates then appear automatically for detected pilots
+- Callsigns turn ORANGE on the board when FSHub landing-rate data is available
+- Settings shows a live readout of the database size and scan progress
+
+Airline logos:
+- Logos render slightly larger with sharper, more consistent sizing
+- Added and optimized more embedded airline logos (CXA, FDB, FJI, KQA, MAS, PIA,
+  LOT, PAL and others); logos are auto-trimmed and resized to match and stay
+  compact. Removed the outdated MAL entry (Malaysia Airlines now uses MAS)
+- 150+ airline logos are embedded and load instantly offline; any other
+  real-world airline is fetched from the logo CDN automatically
+
+Persistence & window:
+- Settings save to your Documents folder with a backup, surviving reinstalls
+- The window remembers its size, position, monitor, maximized and full-screen
+  state between launches
+
+Other:
+- Added a proprietary LICENSE and copyright notice
+- Web/PWA version: FSHub features removed (browsers block FSHub's servers via
+  CORS), so the PWA is a clean VATSIM + IVAO board; all other new features are
+  included
+
+================================================================================
