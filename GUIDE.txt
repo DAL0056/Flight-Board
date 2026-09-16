@@ -1,11 +1,12 @@
 ================================================================================
-                     FLIGHT BOARD - QUICK START GUIDE
+                     FLIGHT BOARD - QUICK START GUIDE  (v2.2)
 ================================================================================
 
 WHAT IS FLIGHT BOARD?
-Flight Board is a live flight information board for Microsoft Flight Simulator
-2020/2024 and X-Plane. It shows your flight, nearby traffic, and friends flying
-on VATSIM, IVAO, and FSHub - just like the boards you see at real airports.
+Flight Board is an application for Microsoft Flight Simulator 2020/2024 and
+X-Plane that displays a live departures and arrivals board similar to those at
+real airports, but for virtual flights. It shows your flight, others on your
+route, and all traffic at your departure and arrival airports.
 
 --------------------------------------------------------------------------------
  WINDOWS APP (.EXE)
@@ -25,71 +26,86 @@ SETUP (first time only):
 
 USING THE BOARD:
   - Use the VATSIM / IVAO / FSHub toggle to switch networks
+  - A small badge on each tab shows how many of your friends are online there
   - Use the Pilot / ATC toggle to switch modes
   - Connect to the network in your simulator - the board updates automatically
-  - Click any flight row to see full flight plan details
+  - Click any flight row to see full flight-plan details and progress
   - Hover or tap the status arrow to see the full route
   - The Zulu (UTC) clock is shown in the top bar
+  - Callsigns shown in ORANGE have FSHub landing-rate data available
 
 PILOT MODE shows:
-  - Your Flight
+  - Your Flight (with a live progress bar under the status)
   - Flights with the Same Route
   - Friends Flying (when friends are online)
   - Airport Traffic at your departure and arrival airports
 
 ATC MODE shows (when connected as a controller):
   - All arrivals and departures at your controlled airport
-  - Your callsign and frequency in the status bar
+  - Your callsign and active frequency in the status bar
 
 FSHUB VIEW shows:
   - Your latest FSHub flight and your friends' flights
-  - "En route" when a friend is flying with the FSHub LRM client active
-  - "Arrived" with time since landing for completed flights
-  - Click any row for details including landing rate, distance, and duration
+  - "En route" when a friend is flying, "Arrived" with landing rate otherwise
 
 --------------------------------------------------------------------------------
  SETTINGS (gear icon)
 --------------------------------------------------------------------------------
 
   Network IDs      - your VATSIM CID and IVAO VID
-  Airport View     - show both airports, departure only, or arrival only
-  IN/OUT Split     - separate arrivals and departures with colored labels
-  Time to Land     - show a live countdown (e.g. "1h 23m") instead of arrival
-                     clock time. The ETA column header switches to "To Land"
-  FSHub Landing    - show FSHub landing rate in the detail card of an arrived
-                     VATSIM/IVAO flight (needs your FSHub token)
-  Theme            - Dark, Light, or fully Custom colors
+  Airport Traffic  - show both airports, departure only, or arrival only;
+                     optional IN / OUT split labels
+  Time to Land     - show a live countdown instead of arrival clock time
+  Progress Bar     - show/hide the flight progress bar under each status
+  Multi-Monitor    - pop out Departures / Arrivals to separate windows
+  FSHub Integration- token, your Pilot ID, and auto-detect of FSHub pilots
+  Theme            - Dark, Light, or Custom colors (click to expand the
+                     color pickers; includes a Progress Bar color)
   Friends          - add friends by name + VATSIM CID / IVAO VID / FSHub ID
-  My Airlines      - upload custom logos for your virtual airline
+                     (click the header to expand)
+  My Airlines      - upload custom logos for any airline
 
-  The window remembers its size, position, monitor, maximized and full-screen
-  state between launches. Your settings are saved to your Documents folder and
-  a backup, so they survive app reinstalls and updates.
+  Tip: Custom Colors and Friends collapse by default - click their header to
+  expand them and keep the Settings page compact.
+
+  The window remembers its size, position, monitor, and maximized/full-screen
+  state. Settings are saved to your Documents folder with a backup, so they
+  survive app reinstalls and updates.
 
 --------------------------------------------------------------------------------
- FSHUB INTEGRATION (landing rates + offline flights)
+ MULTI-MONITOR (desktop app)
 --------------------------------------------------------------------------------
 
-  FSHub records every flight you fly (even offline, without VATSIM/IVAO) and
-  measures your landing rate. To connect it:
+  In Settings -> Multi-Monitor:
+  - Click "Open Departures Window" or "Open Arrivals Window" to pop that board
+    out into its own window. Drag it to another monitor.
+  - Each pop-out keeps the top sections (Your Flight, Same Route, Friends) plus
+    only its own airport board.
+  - Opening a pop-out automatically splits the view: the main window shows the
+    other side, so nothing is duplicated. Closing it restores both sides.
+  - Each window remembers its own position, size and monitor.
 
+  Auto-open on startup:
+  - Use the "Auto-open a window when the app starts" dropdown to have the
+    Departures OR Arrivals window open automatically every launch - a hands-free
+    two-monitor layout.
+
+--------------------------------------------------------------------------------
+ FSHUB INTEGRATION (landing rates)  - Windows app only
+--------------------------------------------------------------------------------
+
+  FSHub records every flight you fly and measures your landing rate.
   1. Go to fshub.io/settings/integrations and copy your API token
   2. In Flight Board: gear -> FSHub Integration -> paste the token
-  3. Enter your own FSHub Pilot ID (found in your fshub.io profile URL)
-  4. Add each friend's FSHub Pilot ID in their Friend entry
+  3. Enter your own FSHub Pilot ID; add friends' FSHub IDs in their entries
+  4. (Optional) Turn on auto-detect - the app gradually builds a database of
+     FSHub pilots so landing rates appear automatically for matching traffic
 
-  What you get:
-  - A dedicated FSHub board showing you and your friends' latest flights
-  - Landing rate (color-coded: green soft, amber firm, red hard) in the
-    detail card of arrived flights
-  - Live "En route" status when a friend flies with their LRM client running
+  Landing rates show in the detail card of an arrived flight, color-coded
+  green (soft) / amber (firm) / red (hard).
 
-  How live detection works:
-  - FSHub only knows a friend is flying if their LRM client is running
-  - When flying on VATSIM/IVAO too, the board cross-references their network
-    ID and fills in the real departure, aircraft, and live status
-  - FSHub's API only shares destination + GPS position during a flight;
-    full live route/speed appears on the fshub.io profile page
+  Note: FSHub features are desktop-only. Web browsers block requests to FSHub's
+  servers, so the web/PWA version covers VATSIM & IVAO only.
 
 --------------------------------------------------------------------------------
  WEB / PWA VERSION (any device - phone, tablet, browser)
@@ -98,48 +114,30 @@ FSHUB VIEW shows:
 URL:  https://dal0056.github.io/Flight-Board/
 
 SETUP:
-  1. Open the URL above in Chrome or Edge
+  1. Open the URL in Chrome or Edge
   2. Click gear -> enter your VATSIM CID and/or IVAO VID
-  3. (Optional) add your FSHub token and Pilot ID
-  4. Your settings save automatically in the browser
+  3. Your settings save automatically in the browser
 
 INSTALL AS AN APP (optional):
-  Android/Chrome:
-    - Tap the menu (three dots) -> "Add to Home Screen"
-  iPhone/iPad (Safari):
-    - Tap the Share button -> "Add to Home Screen"
-  Windows/Mac (Chrome or Edge):
-    - Click the install icon in the address bar
+  Android/Chrome:  menu -> "Add to Home Screen"
+  iPhone/iPad:     Share -> "Add to Home Screen"
+  Windows/Mac:     install icon in the address bar
 
-  After an update, force-refresh (Ctrl+Shift+R) or reopen the installed app
-  to load the newest version.
+  After an update, force-refresh (Ctrl+Shift+R) or reopen the installed app.
 
-NOTES:
-  - All features are identical to the Windows app
-  - Settings are saved per device - each device has its own setup
-  - The PWA has no security warnings, so it's the easiest way to share with
-    your virtual airline members
-  - Works offline for cached logos; live data requires internet
+  NOTES:
+  - VATSIM & IVAO features work fully in the web version
+  - FSHub and Multi-Monitor are Windows-app only
+  - Settings are saved per device
 
 --------------------------------------------------------------------------------
- FRIENDS SYSTEM
+ SORTING & FRIENDS
 --------------------------------------------------------------------------------
-  1. Open gear -> Friends
-  2. Enter their name, and any of VATSIM CID / IVAO VID / FSHub ID -> + Add
-  3. When they are online, they appear in the "Friends Flying" section,
-     highlighted on whichever network they're using
-  4. Click Edit to update their details at any time
-
---------------------------------------------------------------------------------
- TROUBLESHOOTING
---------------------------------------------------------------------------------
-  - Board is empty: check your VATSIM CID / IVAO VID in Settings, and make
-    sure you're connected to the network in your sim
-  - FSHub shows nothing: confirm your token is pasted and your Pilot ID / the
-    friend's FSHub ID is correct
-  - Friend flying but shows "Arrived" on FSHub: their FSHub LRM client wasn't
-    running for that flight - FSHub can only track flights its client records
-  - Wrong status: status updates each poll (15s); give it a moment after
-    takeoff or top of descent to settle
+  - In "Flights with Same Route" and "Airport Traffic", click a column header
+    (Callsign, Airline, Route, Aircraft) to sort A-Z, again for Z-A, again to
+    return to default. With IN/OUT split on, sorting works within each group.
+  - Friends: gear -> Friends -> enter name + any network ID -> + Add. Online
+    friends are highlighted and appear in the "Friends Flying" section, and the
+    network tabs show a live count of friends online.
 
 ================================================================================
