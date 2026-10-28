@@ -2,6 +2,82 @@
                         FLIGHT BOARD - CHANGELOG
 ================================================================================
 
+VERSION 3.0.1 - Airport Header Boxes
+--------------------------------------------------------------------------------
+- "Your Departure" / "Your Arrival" headers are now boxed titles with a drop
+  shadow so they stand out (were too faint before)
+
+VERSION 3.0.0 - Flight Board 3.0
+--------------------------------------------------------------------------------
+- Version number now shown in the app title (top-left): "Flight Board 3.0"
+- Marks the 3.0 release: modern redesign, uniform logos, aligned grid, and the
+  reworked Airlines settings
+
+VERSION 2.4.0 - Airlines Settings Redesign
+--------------------------------------------------------------------------------
+- Renamed the "My Airlines" settings section to "Airlines", now with two
+  collapsible dropdowns:
+    * My Airlines     - add/remove your own custom logos (as before)
+    * Built-in Airlines - browse every logo included in the app, with a
+      search box to find a code quickly
+- Row divider lines run clean and continuous across all columns (from 2.3.6)
+
+VERSION 2.3.6 - Grid Alignment
+--------------------------------------------------------------------------------
+- Row divider lines now run cleanly and continuously across every column,
+  including the Airline/logo column (slightly stronger, uniform hairline)
+- Simplified the logo cell so nothing interrupts the row lines
+
+VERSION 2.3.5 - Clean Rows
+--------------------------------------------------------------------------------
+- Removed alternating row striping; every row now has one uniform background,
+  so there are no faint rectangular bands showing behind the (transparent) logos
+
+VERSION 2.3.4 - Logo Column Alignment
+--------------------------------------------------------------------------------
+- Logos now sized to a consistent height and centred in a fixed slot, so the
+  Airline column lines up cleanly regardless of each tail's width/shape
+- Fixes uneven spacing between wide tails (e.g. AAL) and narrow ones
+
+VERSION 2.3.3 - Logo Alignment
+--------------------------------------------------------------------------------
+- Logos are now left-anchored on the uniform canvas so every tail lines up
+  perfectly down the Airline column (previously centred, which made narrow
+  tails look shifted)
+
+VERSION 2.3.2 - Uniform Logo Shape
+--------------------------------------------------------------------------------
+- Every logo now sits on the same fixed canvas, matching the default tail
+  shape and proportions, centred with no distortion - fully uniform in the list
+- Airlines without real artwork now use the default tail silhouette tinted in
+  their brand colour (instead of a plain coloured box)
+- All 196 logos + the default are identical 81x60 size
+
+VERSION 2.3.1 - Logo Normalization
+--------------------------------------------------------------------------------
+- Every embedded airline logo re-processed to one consistent spec:
+  60px tall, trimmed, PNG-optimized (previously 33px-3840px, up to 342KB each)
+- App file size reduced from ~22 MB to ~2.5 MB (faster load, smaller installer)
+- Added missing logos: FAC, NDF
+- 196 airline logos embedded, all identical height/quality
+
+VERSION 2.3.0 - Modern Redesign
+--------------------------------------------------------------------------------
+- Completely refreshed, modern and elegant interface:
+    * Deep slate background with a subtle depth gradient (replaces flat black)
+    * Slim, refined section headers with an accent bar (replaces the large
+      saturated blue banners)
+    * Tables are now rounded "cards" with uppercase muted column headers,
+      hairline separators and subtle zebra striping
+    * Softer, glossier status bands with cleaner typography
+    * Rounded pill network/mode toggles with a glow on the active tab
+    * Refreshed settings panel, flight detail card and tooltips
+    * Modern system font with tabular (aligned) numbers for ETAs
+    * Smoother hover states; light theme restyled to match
+- Status colour now always shows on friend and alternating rows
+- Added new embedded airline logos: LNI, CKS, FEC, ADC, BBR
+- All existing settings, custom colours and features are unchanged
+
 VERSION 1.0.0 - Initial Release
 --------------------------------------------------------------------------------
 - VATSIM and IVAO flight boards in a single Windows app
