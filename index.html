@@ -623,6 +623,14 @@ tbody tr.is-friend {
 .dc-friend { background: var(--accent); color: #fff; border-radius: 10px; padding: 7px 12px; font-size: 0.85em; font-weight: 700; text-align: center; margin-bottom: 14px; }
 #detail-card .dc-close { width: 100%; padding: 12px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; color: var(--text); cursor: pointer; font-size: 0.95em; font-weight: 600; transition: background 0.15s; }
 #detail-card .dc-close:hover { background: color-mix(in srgb, var(--text) 8%, var(--surface-2)); }
+#detail-card .dc-wx-row { display: flex; gap: 12px; margin-bottom: 14px; }
+#detail-card .dc-wx { flex: 1; min-width: 0; background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; text-align: center; }
+#detail-card .dc-wx-head { display: flex; align-items: center; justify-content: center; gap: 8px; }
+#detail-card .dc-wx-icon { font-size: 1.35em; line-height: 1; }
+#detail-card .dc-wx-apt { font-size: 0.82em; font-weight: 700; letter-spacing: 0.6px; color: var(--muted); }
+#detail-card .dc-wx-temp { font-size: 1.5em; font-weight: 800; margin-top: 5px; }
+#detail-card .dc-wx-desc { font-size: 0.8em; color: var(--muted); margin-top: 2px; text-transform: capitalize; }
+#detail-card .dc-wx-sub { font-size: 0.72em; color: var(--muted); margin-top: 5px; line-height: 1.5; }
 
 /* ── Floating Tooltip ── */
 .has-tooltip { cursor: pointer; }
@@ -975,6 +983,20 @@ tbody tr.is-friend {
       <div class="dc-apt"><span id="dc-dep"></span><small>Departure</small></div>
       <div class="dc-arrow">→</div>
       <div class="dc-apt"><span id="dc-arr"></span><small>Arrival</small></div>
+    </div>
+    <div class="dc-wx-row">
+      <div class="dc-wx" id="dc-wx-dep">
+        <div class="dc-wx-head"><span class="dc-wx-icon">⏳</span><span class="dc-wx-apt" id="dc-wx-dep-apt">—</span></div>
+        <div class="dc-wx-temp" id="dc-wx-dep-temp"></div>
+        <div class="dc-wx-desc" id="dc-wx-dep-desc">Loading weather…</div>
+        <div class="dc-wx-sub" id="dc-wx-dep-sub"></div>
+      </div>
+      <div class="dc-wx" id="dc-wx-arr">
+        <div class="dc-wx-head"><span class="dc-wx-icon">⏳</span><span class="dc-wx-apt" id="dc-wx-arr-apt">—</span></div>
+        <div class="dc-wx-temp" id="dc-wx-arr-temp"></div>
+        <div class="dc-wx-desc" id="dc-wx-arr-desc">Loading weather…</div>
+        <div class="dc-wx-sub" id="dc-wx-arr-sub"></div>
+      </div>
     </div>
     <div class="dc-grid">
       <div class="dc-field"><label>Altitude</label><span id="dc-alt"></span></div>
@@ -2827,6 +2849,80 @@ function showFlightDetail(key) {
   if (!entry) return;
   showDetailCard(entry.data, entry.net);
 }
+const _metarCache = {};
+function wxFromMetar(raw) {
+  const r = (raw || '').toUpperCase().trim();
+  if (!r || r.indexOf('NO METAR') !== -1 || r.length < 10) return null;
+  const out = { icon: '🌡️', temp: null, tempF: null, desc: '', wind: '', qnh: '' };
+  let m = r.match(/\s(M?\d{2})\/(M?\d{2})(\s|$)/);
+  if (m) { out.temp = parseInt(m[1].replace('M', '-'), 10); out.tempF = Math.round(out.temp * 9 / 5 + 32); }
+  m = r.match(/\b(\d{3}|VRB)(\d{2,3})(?:G(\d{2,3}))?KT\b/);
+  if (m) {
+    if (m[1] === '000' && m[2] === '00') out.wind = 'Calm';
+    else if (m[1] === 'VRB') out.wind = 'VRB ' + parseInt(m[2], 10) + 'kt';
+    else out.wind = m[1] + '° ' + parseInt(m[2], 10) + 'kt' + (m[3] ? ' G' + parseInt(m[3], 10) : '');
+  }
+  m = r.match(/\bA(\d{4})\b/);
+  if (m) out.qnh = (parseInt(m[1], 10) / 100).toFixed(2) + ' inHg';
+  else { m = r.match(/\bQ(\d{4})\b/); if (m) out.qnh = parseInt(m[1], 10) + ' hPa'; }
+  const phen = [];
+  if (/TS/.test(r)) { out.icon = '⛈️'; phen.push('thunderstorm'); }
+  else if (/SN|SG/.test(r)) { out.icon = '🌨️'; phen.push('snow'); }
+  else if (/\b(\+|-)?(RA|DZ|SHRA)\b/.test(r)) { out.icon = '🌧️'; phen.push('rain'); }
+  else if (/\bFG\b|\bBR\b|\bHZ\b|\bFU\b|\bMIFG\b/.test(r)) { out.icon = '🌫️'; phen.push('fog / mist'); }
+  let cloud = '';
+  if (/CAVOK|\bCLR\b|\bSKC\b|\bNSC\b|\bNCD\b/.test(r)) { cloud = 'clear sky'; if (!phen.length) out.icon = '☀️'; }
+  else if (/\bOVC\d{3}/.test(r)) { cloud = 'overcast'; if (!phen.length) out.icon = '☁️'; }
+  else if (/\bBKN\d{3}/.test(r)) { cloud = 'broken clouds'; if (!phen.length) out.icon = '🌥️'; }
+  else if (/\b(SCT|FEW)\d{3}/.test(r)) { cloud = 'partly cloudy'; if (!phen.length) out.icon = '⛅'; }
+  out.desc = phen.concat(cloud ? [cloud] : []).join(', ') || 'conditions reported';
+  return out;
+}
+async function fetchMetarRaw(url) {
+  const ctrl = new AbortController();
+  const to = setTimeout(function(){ ctrl.abort(); }, 6000);
+  try {
+    const res = await fetch(url, { signal: ctrl.signal, cache: 'no-store' });
+    clearTimeout(to);
+    if (!res.ok) return null;
+    const txt = (await res.text()).trim();
+    return txt || null;
+  } catch (e) { clearTimeout(to); return null; }
+}
+async function fetchMetar(icao) {
+  if (!icao || icao.length < 3 || icao === '--' || icao === '—') return null;
+  icao = icao.toUpperCase();
+  if (_metarCache[icao]) return _metarCache[icao];
+  let raw = await fetchMetarRaw('https://metar.vatsim.net/metar.php?id=' + encodeURIComponent(icao));
+  if (!raw || raw.toUpperCase().indexOf('NO METAR') !== -1) {
+    raw = await fetchMetarRaw('https://aviationweather.gov/api/data/metar?ids=' + encodeURIComponent(icao) + '&format=raw');
+  }
+  const wx = wxFromMetar(raw);
+  if (wx) _metarCache[icao] = wx;
+  return wx;
+}
+async function renderWxTile(prefix, icao) {
+  const icon = document.querySelector('#dc-wx-' + prefix + ' .dc-wx-icon');
+  const apt  = document.getElementById('dc-wx-' + prefix + '-apt');
+  const temp = document.getElementById('dc-wx-' + prefix + '-temp');
+  const desc = document.getElementById('dc-wx-' + prefix + '-desc');
+  const sub  = document.getElementById('dc-wx-' + prefix + '-sub');
+  if (apt) apt.textContent = (icao && icao !== '--' && icao !== '—') ? icao : '—';
+  if (icon) icon.textContent = '⏳';
+  if (temp) temp.textContent = '';
+  if (desc) desc.textContent = 'Loading weather…';
+  if (sub) sub.textContent = '';
+  const wx = await fetchMetar(icao);
+  if (!wx) { if (icon) icon.textContent = '🌐'; if (desc) desc.textContent = 'Weather unavailable'; return; }
+  if (icon) icon.textContent = wx.icon;
+  if (temp) temp.textContent = (wx.temp != null) ? (wx.temp + '°C') : '—';
+  if (desc) desc.textContent = wx.desc;
+  if (sub) sub.textContent = [ (wx.tempF != null ? wx.tempF + '°F' : ''), wx.wind, wx.qnh ].filter(Boolean).join('  ·  ');
+}
+function loadDetailWeather(dep, dest) {
+  renderWxTile('dep', dep);
+  renderWxTile('arr', dest);
+}
 function showDetailCard(p, network) {
   try {
   const s  = network === 'vatsim' ? vatsimStatus(p) : ivaoStatus(p.lastTrack);
@@ -2913,6 +3009,7 @@ function showDetailCard(p, network) {
   // Route
   document.getElementById('dc-dep').textContent = network === 'vatsim' ? fp.departure    : fp.departureId;
   document.getElementById('dc-arr').textContent = network === 'vatsim' ? fp.arrival      : fp.arrivalId;
+  loadDetailWeather(network === 'vatsim' ? fp.departure : fp.departureId, network === 'vatsim' ? fp.arrival : fp.arrivalId);
 
   // Grid fields
   const alt = network === 'vatsim'

@@ -2,6 +2,20 @@
                         FLIGHT BOARD - CHANGELOG
 ================================================================================
 
+VERSION 3.1.1 - Weather Reliability
+--------------------------------------------------------------------------------
+- Fixed weather sometimes getting stuck on "Loading..." in the detail card
+- Weather requests now time out after 6s and fall back to a second source
+  (NOAA) if VATSIM's METAR is unavailable, so the tile always resolves
+
+VERSION 3.1.0 - Live Weather in Flight Details
+--------------------------------------------------------------------------------
+- Open any flight's detail card to see live METAR weather for both the
+  departure and arrival airports:
+    * Condition icon, temperature (C and F), sky/precip summary
+    * Wind (direction / speed / gust) and altimeter (QNH)
+- Weather is pulled from VATSIM's METAR service (works online, no setup)
+
 VERSION 3.0.1 - Airport Header Boxes
 --------------------------------------------------------------------------------
 - "Your Departure" / "Your Arrival" headers are now boxed titles with a drop
